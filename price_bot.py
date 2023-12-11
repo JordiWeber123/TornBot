@@ -1,21 +1,33 @@
 from torn_client import User
 import discord as ds
 users = {} #key : discord_username,value: User
-
+TOKEN = ""
 intents = ds.Intents.default()
 
-client = ds.Client(intents=intents)
-command_tree = ds.app_commands.CommandTree(client)
+bot = commands.Bot(command_prefix='/', intents=intents)
+
 @client.event
 async def on_ready():
-    await tree.sync()#guild=discord.Object(id=my guild id)
+    #await tree.sync()#guild=discord.Object(id=my guild id)
     print("Hello, I am MisterReco's Torn Bot")
 
-@command_tree.command(name="add", description="Add an item id and a threshold price")
-async def first_command(interaction):
-    await interaction.response.send_message("Adding...")
+#add an item to track
+@bot.command()
+async def add(ctx, id, threshold):
+    await ctx.send(f"Adding item {id} with a threshold of {threshold}")
 
+#update an item currently being tracked
+@bot.command()
+async def update(ctx, id, threshold):
+    await ctx.send(f"Updating item {id} with a threshold of {threshold}")
 
-@client_event
-async def on_message(message):
-    pass
+#remove an item from being tracked
+@bot.command()
+async def remove(ctx, id):
+    await ctx.send(f"Stopped tracking item {id}")
+
+while True:
+    try:
+        bot.run(TOKEN)
+    except Exception:
+        sleep(70)

@@ -1,7 +1,11 @@
 from torn_client import User
+from time import sleep
 import discord as ds
+from discord.ext import commands
+
 users = {} #key : discord_username,value: User
 TOKEN = ""
+client = ds.Client()
 intents = ds.Intents.default()
 
 bot = commands.Bot(command_prefix='/', intents=intents)

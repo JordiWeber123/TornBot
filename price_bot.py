@@ -3,10 +3,9 @@ from time import sleep
 import discord as ds
 from discord.ext import tasks, commands
 from discord import User as DiscordUser
-import json
 
 users = {} #key : discord_username,value: User
-TOKEN = "MTE4NTYzNjI3MDM5NTg5MTc3NQ.GPDy7g.Rk0PRGtPMTwf7xHaCjaRA50Bf_8E0gnXgxSJD0"
+TOKEN = "private"
 intents = ds.Intents.default()
 intents.message_content = True
 
@@ -100,6 +99,4 @@ while True:
         bot.run(TOKEN)
     except Exception:
         print("Exception")
-        with open("users.json", "w") as fp:
-            json.dump(users, fp)
         sleep(70)

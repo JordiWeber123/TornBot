@@ -1,4 +1,5 @@
 import requests
+from copy import deepcopy
 base = "https://api.torn.com/market/"
 torn_store_base = "https://www.torn.com/imarket.php#/p=shop&step=shop&type=&searchname="
 bazaar_ending = "?selections=bazaar&key="
@@ -21,7 +22,7 @@ class User():
         return f"{self.key} {self.items}" 
     
     def asdict(self):
-        return {"key": self.key, "items": self.items}
+        return {"key": self.key, "items": deepcopy(self.items)}
     
     def get_request_urls(self, id: int):
         item_str = str(id)
@@ -38,8 +39,10 @@ class User():
             message = validate_torn_listings(temp_list, id, threshold, torn_items)
         return message
     
-    
-    #Maybe unnecessary tbh
+    def add_item(self, item_id: int, threshold: int):
+        self.update_threshold(item_id, threshold)
+
+    #Updates a threshold for a given item
     def update_threshold(self, item_id: int, threshold: int):
         self.items[item_id] = threshold
 

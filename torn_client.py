@@ -29,7 +29,7 @@ class User():
         return (base + item_str + bazaar_ending + self.key, base + item_str + market_ending + self.key)
     
     #Checks all the items in the items_dict, if any has 
-    def check_items(self):
+    def check_items(self) -> str:
         torn_items = requests.get(torn_items_page + self.key).json()["items"]
         for id, threshold in self.items.items():
             urls = self.get_request_urls(id)
@@ -38,25 +38,53 @@ class User():
             temp_list += requests.get(urls[MARKET_INDEX]).json()["itemmarket"]
             message = validate_torn_listings(temp_list, id, threshold, torn_items)
         return message
-    
+
     def add_item(self, item_id: int, threshold: int):
+        """Adds an item to the items dict for tracking
+        :Parameters:
+            -`item_id`: the id of the item to add
+            -`threshold`: cost below which user will be notified """
         self.update_threshold(item_id, threshold)
 
-    #Updates a threshold for a given item
+
     def update_threshold(self, item_id: int, threshold: int):
+        """Updates a threshold for a given item
+        
+        :Parameters:
+            -`item_id`: the id of the item to add
+            -`threshold`: is cost below which user will be notified """
         self.items[item_id] = threshold
 
-    #Maybe unnecessary tbh
+    
     def check_added(self, item_id: int) -> bool:
+        """Checks if an item has been added to the items dict
+        
+        :Parameters:
+            -`item_id`: the id of the item to check"""
         return item_id in self.items
     
+   
     def remove(self, id):
+        """Removes an item from items dict given its id
+        
+        :Parameters:
+            -`id`: the id of the item to remove
+        """
         del self.items[id]
 
-    def list_items(self):
+    def list_items(self) -> str:
+        """Returns a string that lists the items added to the items dict"""
         return "".join([f"{key}\t ${value:,}\n" for key, value in self.items.items()])
 
-def validate_torn_listings(item_list,item_id, threshold, torn_items):
+def validate_torn_listings(item_list,item_id, threshold, torn_items) -> str:
+        """Retuns a string contaning the torn store page and the price of a specific item if
+        its cost is below the threshold
+        
+        :Parameters:
+            -`item_list`: the list of the market listings for this item
+            -`item_id`: the id of the item
+            -`thresholdt`: the threshold to check against the market cost 
+            -`torn_items`: the dict containing the torn_items JSON info"""
         message = ""
         for listing_info in item_list:
                 if listing_info["cost"] <= threshold:

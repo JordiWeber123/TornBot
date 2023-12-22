@@ -3,12 +3,14 @@ from time import sleep
 import discord as ds
 from discord.ext import tasks, commands
 from discord import User as DiscordUser
+import os
+from dotenv import load_dotenv
 
+load_dotenv()
 users = {} #key : discord_username,value: User
-TOKEN = "private"
+TOKEN = os.environ["DS_TOKEN"]
 intents = ds.Intents.default()
 intents.message_content = True
-
 bot = commands.Bot(command_prefix='/', intents=intents)
 
 @bot.event
@@ -23,19 +25,17 @@ async def add_user(ctx, key):
     user = str(ctx.author.id)
     if user not in users:
         users[user] = TornUser(key)
-        await ctx.send(f"User @{ctx.author.id} has been added")
+        await ctx.send(f"User <@{ctx.author.id}> has been added")
     else:
-        await ctx.send(f"User @{ctx.author.id} already added")
+        await ctx.send(f"User <@{ctx.author.id}> already added")
 #add an item to track
 @bot.command()
 async def add(ctx, id, threshold):
     user = str(ctx.author.id)
     id = int(id)
     threshold = int(threshold)
-    if user not in users:
-        await ctx.send(f"User @{ctx.author.id} not in data base, use command `add_user`")
-    else:
-        users[user].update_threshold(id, threshold)
+    if check_user(user):
+        users[user].add_item(id, threshold)
         await ctx.send(f"Adding item #{id} with a threshold of ${threshold:,}")
 
 #update an item currently being tracked
@@ -44,9 +44,7 @@ async def update(ctx, id, threshold):
     user = str(ctx.author.id)
     threshold = int(threshold)
     id = int(id)
-    if user not in users:
-        await ctx.send(f"User @{ctx.author.id} not in data base, use command `add_user`")
-    else:
+    if check_user(user):
         users[user].update_threshold(id, threshold)
         await ctx.send(f"Updating item #{id} with a threshold of {threshold}")
 
@@ -66,7 +64,10 @@ async def remove(ctx, id):
 async def list_items(ctx):
     user = str(ctx.author.id)
     if await check_user(ctx, user):
-        await ctx.send(f"These are the items user @{user} is currently tracking")
+        if len(user[user]) <= 0:
+            await ctx.send(f"User <@{user} is currently not tracking any items")
+            return
+        await ctx.send(f"These are the items user <@{user}> is currently tracking")
         list_items = "ID \tThreshold"
         listed_items += users[user].list_items()
         #TODO Make an embed instead of send
@@ -77,7 +78,7 @@ async def dm(ctx):
     await channel.send("This is a dm")
 async def check_user(ctx, user_id):
     if user_id not in users:
-        await ctx.send(f"User @{ctx.author.id} not in data base, use command `add_user`")
+        await ctx.send(f"User <@{ctx.author.id}> not in data base, use command `add_user`")
         return False
     return True
 

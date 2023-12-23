@@ -21,8 +21,9 @@ class User():
     def __repr__(self):
         return f"{self.key} {self.items}" 
     
-    def asdict(self):
-        return {"key": self.key, "items": deepcopy(self.items)}
+    def as_mongodoc(self):
+        return {"key": self.key, "items": 
+                {str(key):value for (key, value) in deepcopy(self.items).items()}}
     
     def get_request_urls(self, id: int):
         item_str = str(id)
@@ -30,6 +31,7 @@ class User():
     
     #Checks all the items in the items_dict, if any has 
     def check_items(self) -> str:
+        message = ""
         torn_items = requests.get(torn_items_page + self.key).json()["items"]
         for id, threshold in self.items.items():
             urls = self.get_request_urls(id)

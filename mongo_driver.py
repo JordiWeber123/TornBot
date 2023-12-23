@@ -26,8 +26,6 @@ def user_to_db(user_id: str, torn_user: TornUser) -> dict:
 def alreadyExists(newID: str, collection: collection):
     return collection.count_documents({"_id": newID},limit = 1) != 0
 
-    
-
 if __name__ == "__main__":
     db = get_database()
     users_collection= db["users"]
